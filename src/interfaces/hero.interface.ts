@@ -12,4 +12,4 @@ interface IHero {
     eyes:string,
     powers:Array<string>
 }
-export {IHero}
+export default IHero;

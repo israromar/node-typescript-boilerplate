@@ -1,18 +1,24 @@
-import express, {Router, Request, Response} from 'express';
+import express from 'express';
 import logger from 'morgan';
 import * as bodyParser from 'body-parser';
-import HeroRouter from './routes/HeroRouter';
-// Creates and configures an ExpressJS web server.
+// Error Middleware
+import errorMiddleware from './middlewares/error.middleware';
+// Interfaces
+import IController from './interfaces/controller.interface';
+// Controllers
+import HeroController from './controllers/hero.controller';
 class App {
 
   // ref to Express instance
   public express: express.Application;
 
+  private root = '/api/v1'
+ 
   //Run configuration methods on the Express instance.
-  constructor () {
+  constructor (controllers:IController[]) {
     this.express = express();
     this.middleware();
-    this.routes();
+    this.initializeControllers(controllers);
   }
 
   // Configure Express middleware.
@@ -20,25 +26,18 @@ class App {
     this.express.use(logger('dev'));
     this.express.use(bodyParser.json());
     this.express.use(bodyParser.urlencoded({extended: false}));
+    this.express.use(errorMiddleware);
   }
 
-  // Configure API endpoints.
-  private routes (): void {
-    /* This is just to get up and running, and to make sure what we've got is
-     * working so far. This function will change when we start to add more
-     * API endpoints */
-    const router = <Router>express.Router();
-    // placeholder route handler
-
-    router.get('/', (req:Request, res:Response):void => {
-      res.json({
-        message: 'Hello World!'
-      });
+  private initializeControllers (controllers: IController[]):void {
+    controllers.forEach((controller) => {
+      this.express.use(this.root, controller.router);
     });
-    this.express.use('/', router);
-    this.express.use('/api/v1/heroes',HeroRouter);
   }
-
 }
 
-export default new App().express;
+const controllers = [
+  new HeroController()
+]
+
+export default new App(controllers).express;

@@ -1,7 +1,7 @@
 import {it,describe} from 'mocha';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import {IHero} from '../DataModels/Heroes';
+import {IHero} from '../DataModels/hero.model';
 import app from '../App';
 
 chai.use(chaiHttp);

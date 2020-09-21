@@ -2,7 +2,7 @@ import http from 'http';
 import {AddressInfo} from 'net';
 import App from './App';
 
-const port = normalizePort(process.env.PORT || 3000);
+const port = normalizePort(process.env.PORT || 7000);
 
 App.set('port',port);
 const server = http.createServer(App);
