@@ -9,15 +9,19 @@
     "start": "yarn run build && node build/index.js",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "test": "mocha -r ts-node/register ./src/test/**/*.test.ts"
+    "test": "MONGO_URL=mongodb://localhost:27017/testing mocha -r ts-node/register ./src/test/**/*.test.ts"
   },
   "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
     "@types/body-parser": "^1.19.0",
     "@types/chai": "^4.2.12",
     "@types/chai-http": "^4.2.0",
+    "@types/cookie-parser": "^1.4.2",
     "@types/debug": "^4.1.5",
     "@types/express": "^4.17.8",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/mocha": "^8.0.3",
+    "@types/mongoose": "^5.7.36",
     "@types/morgan": "^1.9.1",
     "@types/node": "^14.10.1",
     "@typescript-eslint/eslint-plugin": "^4.1.1",
@@ -32,8 +36,13 @@
     "typescript": "^4.0.2"
   },
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.10.6",
     "morgan": "^1.10.0"
   }
 }

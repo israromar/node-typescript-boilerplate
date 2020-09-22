@@ -3,7 +3,8 @@ import IController from '../interfaces/controller.interface';
 import IHero from '../interfaces/hero.interface';
 import HeroData from '../data.json';
 import HeroNotFoundException from '../errors/HeroNotFoundException';
-
+import authMiddleware from '../middlewares/authentication.middleware';
+import IRequestWithUser from '../interfaces/requestWithUser.interface';
 class HeroController implements IController {
     public path='/heroes';
 
@@ -16,11 +17,11 @@ class HeroController implements IController {
     }
 
     private initializeRoutes () {
-      this.router.get(this.path, this.getAll);
+      this.router.get(this.path,authMiddleware, this.getAll);
       this.router.get(`${this.path}/:id`, this.get);
     }
 
-    getAll (req:Request,res:Response):void{
+    getAll (req:IRequestWithUser,res:Response):void{
       res.status(200).json(HeroData)
     }
 
@@ -31,7 +32,7 @@ class HeroController implements IController {
 
       if(!Hero)
         next(new HeroNotFoundException(id))
-      res.status(200).json(Hero)
+      else res.status(200).json(Hero)
     }
 
 }

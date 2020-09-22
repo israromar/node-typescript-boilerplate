@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import http from 'http';
 import {AddressInfo} from 'net';
 import App from './App';
