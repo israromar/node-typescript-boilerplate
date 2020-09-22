@@ -1,6 +1,7 @@
 import express,{Application} from 'express';
+import {Connection, createConnection} from 'typeorm';
+import config from './config/ormconfig';
 import logger from 'morgan';
-import mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 // Middlewares
@@ -19,8 +20,8 @@ class App {
  
   //Run configuration methods on the Express instance.
   constructor (controllers:IController[]) {
+    this.connectToPostGres();
     this.express = express();
-    this.connectToMongDb();
     this.middleware();
     this.initializeControllers(controllers);
     this.initializeErrorMiddleware();
@@ -38,18 +39,14 @@ class App {
     this.express.use(errorMiddleware);
   }
 
-  private connectToMongDb ():void{
-    const {
-      MONGO_URL,
-    } = process.env;
-    const config ={useNewUrlParser:true,useUnifiedTopology:true}
+  private connectToPostGres = async ()=>{
+    try {
+      const conn:Connection = await createConnection(config);
 
-    if(MONGO_URL)
-      mongoose.connect(MONGO_URL,config,(err)=>{
-        if(err) throw new Error(err.message);
-        console.log(`Connected to ${process.env.MONGO_URL}`);
-      });
-    else throw new Error('No database url provided....');
+      if(conn)console.log(`Connected to POST GRES ${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}`)
+    } catch (error) {
+      throw new Error(`Error connecting to the POST GRESS ${error.message}`)
+    }
   }
 
   private initializeControllers (controllers: IController[]):void {
