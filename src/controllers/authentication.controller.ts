@@ -6,7 +6,7 @@ import EmailAlreadyExistsException from '../errors/EmailAlreadyExistsException';
 import InvalidCredentialsException from '../errors/InvalidCredentialsException';
 // Interfaces
 import IController from '../interfaces/controller.interface';
-import IUser from '../interfaces/user.interface';
+// import IUser from '../interfaces/user.interface';
 import DataStoredInToken from '../interfaces/dataStoredInToken.interface';
 import IJwt from '../interfaces/jwt.interface';
 import {getRepository} from 'typeorm';
@@ -16,9 +16,6 @@ class AuthenticationController implements IController {
     public path = '/auth'
 
     public router = Router();
-
-    // private user = User;
-    // private userRepository = getRepository<IUser>(UserEntity).find();
 
     constructor () {
       this.initializeRoutes();
@@ -31,9 +28,9 @@ class AuthenticationController implements IController {
     }
 
     private register = async (req:Request,res:Response,next:NextFunction)=>{
-      const userData:IUser = req.body;
-      const newUser = getRepository<IUser>(UserEntity).create(userData);
-      const userAlreadyExists = await getRepository<IUser>(UserEntity).findOne({email:userData.email})
+      const userData:UserEntity = req.body;
+      const newUser = getRepository<UserEntity>(UserEntity).create(userData);
+      const userAlreadyExists = await getRepository<UserEntity>(UserEntity).findOne({email:userData.email})
 
       if(userAlreadyExists) {
         next(new EmailAlreadyExistsException(userData.email));
@@ -41,32 +38,30 @@ class AuthenticationController implements IController {
         const hashedPassword = await hash(userData.password,10);
 
         newUser.password=hashedPassword;
-        const user:IUser = await getRepository<IUser>(UserEntity).save(newUser);
+        const user:UserEntity = await getRepository<UserEntity>(UserEntity).save(newUser);
 
         user.password = undefined;
-        res.status(200).json(newUser);
+        res.status(200).json(user);
       }
     }
 
     private login = async (req:Request,res:Response,next:NextFunction)=>{
-      const userData:IUser = req.body;
+      const userData:UserEntity = req.body;
+      const user = await getRepository<UserEntity>(UserEntity).findOne({email:userData.email});
 
-      //   const user = await this.user.findOne({email:userData.email})
+      if(user) {
+        if(user.password) {
+          const isPasswordSame = await compare(userData.password,user.password)
 
-      
-      //   if(user) {
-      //     if(user.password) {
-      //       const isPasswordSame = await compare(userData.password,user.password)
+          if(isPasswordSame) {
+            user.password = undefined;
+            const tokenData:IJwt = this.createToken(user);
 
-      //       if(isPasswordSame) {
-      //         user.password = undefined;
-      //         const tokenData:IJwt = this.createToken(user);
-
-    //         res.setHeader('Set-Cookie',[this.createCookie(tokenData)]);
-    //         res.status(200).json(user);
-    //       }else next(new InvalidCredentialsException())
-    //     }
-    //   }else next(new InvalidCredentialsException())
+            res.setHeader('Set-Cookie',[this.createCookie(tokenData)]);
+            res.status(200).json(user);
+          }else next(new InvalidCredentialsException())
+        }
+      }else next(new InvalidCredentialsException())
     }
 
     private loggingOut = (request: Request, response: Response) => {
@@ -74,11 +69,11 @@ class AuthenticationController implements IController {
       response.send(200);
     }
 
-    private createToken = (user:IUser):IJwt=>{
+    private createToken = (user:UserEntity):IJwt=>{
       const expiresIn = 60*60; // an hour
       const secret = process.env.SECRET;
       const dataStoredInToken:DataStoredInToken = {
-        _id:user.id
+        id:user.id
       }
 
       if(secret)

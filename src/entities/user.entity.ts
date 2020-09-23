@@ -1,4 +1,5 @@
-import {Entity,Column,PrimaryGeneratedColumn} from 'typeorm';
+import {Entity,Column,PrimaryGeneratedColumn, OneToOne, JoinColumn} from 'typeorm';
+import AddressEntity from './address.entity';
 @Entity()
 class User {
     @PrimaryGeneratedColumn()
@@ -8,9 +9,13 @@ class User {
     public email!:string;
 
     @Column()
-    public password!:string;
+    public password?:string;
 
     @Column()
     public name!:string;
+
+    @OneToOne(()=>AddressEntity,(address:AddressEntity)=>address.user,{cascade:true})
+    @JoinColumn()
+    public address!:AddressEntity
 }
 export default User;

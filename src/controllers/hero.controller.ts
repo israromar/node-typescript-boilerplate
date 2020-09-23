@@ -10,8 +10,6 @@ class HeroController implements IController {
 
     public router = Router();
 
-    // private heroes:IHero[] = HeroData;
-
     constructor () {
       this.initializeRoutes();
     }

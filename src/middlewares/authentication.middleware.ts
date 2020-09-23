@@ -1,7 +1,10 @@
 import {NextFunction, Response} from 'express';
 import {verify} from 'jsonwebtoken'
+import {getRepository} from 'typeorm';
+import UserEntity from '../entities/user.entity';
 import IRequestWithUser from '../interfaces/requestWithUser.interface';
 import IDataStoredInToken from '../interfaces/dataStoredInToken.interface';
+// import UserEntity from '../interfaces/user.interface';
 import InvalildTokenException from '../errors/InvalidTokenException';
 import AuthenticationTokenMissingException from '../errors/AuthenticationTokenMissingException';
 export default async (req:IRequestWithUser,res:Response,next:NextFunction):Promise<IRequestWithUser>=>{
@@ -13,15 +16,15 @@ export default async (req:IRequestWithUser,res:Response,next:NextFunction):Promi
     if(secret)
       try {
         const verififactionResponse = verify(cookies.Authorization,secret) as IDataStoredInToken;
-        const id = verififactionResponse._id;
-        // const user= await User.findById(id);
+        const id = verififactionResponse.id;
+        const user = await getRepository<UserEntity>(UserEntity).findOne({id});
 
-        // if(user) {
-        //   req.user = user;
-        //   next();
-        // }else {
-        //   next(new InvalildTokenException());
-        // }
+        if(user) {
+          req.user = user;
+          next();
+        }else {
+          next(new InvalildTokenException());
+        }
       } catch (error) {
         next(new InvalildTokenException());
       }
