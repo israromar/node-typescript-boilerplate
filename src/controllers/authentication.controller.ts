@@ -41,7 +41,7 @@ class AuthenticationController implements IController {
         const user:UserEntity = await getRepository<UserEntity>(UserEntity).save(newUser);
 
         user.password = undefined;
-        res.status(200).json(user);
+        res.status(200).json({success:true,user});
       }
     }
 
@@ -57,8 +57,8 @@ class AuthenticationController implements IController {
             user.password = undefined;
             const tokenData:IJwt = this.createToken(user);
 
-            res.setHeader('Set-Cookie',[this.createCookie(tokenData)]);
-            res.status(200).json(user);
+            // res.setHeader('Set-Cookie',[this.createCookie(tokenData)]);
+            res.status(200).json({success:true,user,token:tokenData.token});
           }else next(new InvalidCredentialsException())
         }
       }else next(new InvalidCredentialsException())

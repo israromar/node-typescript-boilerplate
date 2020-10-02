@@ -4,7 +4,7 @@ function errorMiddleware (error:HttpException,req:Request,res:Response,next:Next
   const status = error.status || 500;
   const message = error.message || 'Something went wrong';
 
-  res.status(status).json({status,message});
+  res.status(status).json({success:false,status,message});
   next();
 }
 export default errorMiddleware;

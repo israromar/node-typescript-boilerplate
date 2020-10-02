@@ -1,7 +1,8 @@
-import express,{Application} from 'express';
+import express,{Application, Request, Response} from 'express';
 import {Connection, createConnection} from 'typeorm';
 import config from './config/ormconfig';
 import logger from 'morgan';
+import cors from 'cors';
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 // Middlewares
@@ -11,6 +12,8 @@ import IController from './interfaces/controller.interface';
 // Controllers
 import HeroController from './controllers/hero.controller';
 import AuthenticationController from './controllers/authentication.controller';
+import authenticationMiddleware from './middlewares/authentication.middleware';
+import UserController from './controllers/userController';
 class App {
 
   // ref to Express instance
@@ -23,6 +26,7 @@ class App {
     this.connectToPostGres();
     this.express = express();
     this.middleware();
+    this.initializeCors();
     this.initializeControllers(controllers);
     this.initializeErrorMiddleware();
   }
@@ -39,6 +43,24 @@ class App {
     this.express.use(errorMiddleware);
   }
 
+  private initializeCors ():void {
+    const options: cors.CorsOptions = {
+      allowedHeaders: [
+        'Origin',
+        'X-Requested-With',
+        'Content-Type',
+        'Accept',
+        'X-Access-Token',
+      ],
+      credentials: true,
+      methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
+      origin: process.env.REACT_APP_URL,
+      preflightContinue: false,
+    };
+
+    this.express.use(cors(options));
+  }
+
   private connectToPostGres = async ()=>{
     try {
       const conn:Connection = await createConnection(config);
@@ -50,6 +72,7 @@ class App {
   }
 
   private initializeControllers (controllers: IController[]):void {
+    this.express.get(`${this.root}/test`,authenticationMiddleware,(req:Request,res:Response)=>res.status(200).json({message:'working...'}));
     controllers.forEach((controller) => {
       this.express.use(this.root, controller.router);
     });
@@ -58,7 +81,8 @@ class App {
 
 const controllers = [
   new HeroController(),
-  new AuthenticationController()
+  new AuthenticationController(),
+  new UserController()
 ]
 
 export default new App(controllers).express;
