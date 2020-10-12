@@ -10,10 +10,10 @@ import errorMiddleware from './middlewares/error.middleware';
 // Interfaces
 import IController from './interfaces/controller.interface';
 // Controllers
-import HeroController from './controllers/hero.controller';
 import AuthenticationController from './controllers/authentication.controller';
 import authenticationMiddleware from './middlewares/authentication.middleware';
 import UserController from './controllers/userController';
+import ProfileController from './controllers/profile.controller';
 class App {
 
   // ref to Express instance
@@ -80,9 +80,9 @@ class App {
 }
 
 const controllers = [
-  new HeroController(),
   new AuthenticationController(),
-  new UserController()
+  new UserController(),
+  new ProfileController()
 ]
 
 export default new App(controllers).express;

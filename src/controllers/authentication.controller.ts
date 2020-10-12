@@ -29,16 +29,16 @@ class AuthenticationController implements IController {
 
     private register = async (req:Request,res:Response,next:NextFunction)=>{
       const userData:UserEntity = req.body;
-      const newUser = getRepository<UserEntity>(UserEntity).create(userData);
       const userAlreadyExists = await getRepository<UserEntity>(UserEntity).findOne({email:userData.email})
-
+      
       if(userAlreadyExists) {
         next(new EmailAlreadyExistsException(userData.email));
       }else{
+        const newUser = getRepository<UserEntity>(UserEntity).create(userData);
         const hashedPassword = await hash(userData.password,10);
 
         newUser.password=hashedPassword;
-        const user:UserEntity = await getRepository<UserEntity>(UserEntity).save(newUser);
+        const user:UserEntity = await getRepository<UserEntity>(UserEntity).save({...newUser,firstName:newUser.firstName.toLowerCase(),lastName:newUser.lastName.toLowerCase()});
 
         user.password = undefined;
         res.status(200).json({success:true,user});

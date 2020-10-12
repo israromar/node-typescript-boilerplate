@@ -21,10 +21,11 @@ class UserController implements IController {
       const {id} = req.params;
 
       try {
-        const user = await getRepository<UserEntity>(UserEntity).findOne(id);
-          
+        const user = await getRepository<UserEntity>(UserEntity).findOne(id,{relations:['profile']});
+
         if(user) {
           user.password = undefined;
+          user.profile.id = undefined;
           res.status(200).json({success:true,user});
         }
         else next(new UserNotFoundException());

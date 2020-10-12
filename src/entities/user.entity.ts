@@ -1,5 +1,5 @@
-import {Entity,Column,PrimaryGeneratedColumn} from 'typeorm';
-// import AddressEntity from './address.entity';
+import {Entity,Column,PrimaryGeneratedColumn, OneToOne, JoinColumn} from 'typeorm';
+import ProfileEntity from './profile.entity';
 @Entity()
 class User {
     @PrimaryGeneratedColumn()
@@ -17,8 +17,12 @@ class User {
     @Column()
     public password?:string;
 
-  // @OneToOne(()=>AddressEntity,(address:AddressEntity)=>address.user,{cascade:true})
-  // @JoinColumn()
-  // public address!:AddressEntity
+    // @OneToOne(()=>AddressEntity,(address:AddressEntity)=>address.user,{cascade:true})
+    // @JoinColumn()
+    // public address!:AddressEntity
+
+  @OneToOne(()=>ProfileEntity,(profile:ProfileEntity)=>profile.user,{cascade:true})
+  @JoinColumn()
+  public profile!:ProfileEntity
 }
 export default User;
