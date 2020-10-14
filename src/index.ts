@@ -3,18 +3,25 @@ import 'reflect-metadata';
 import http from 'http';
 import {AddressInfo} from 'net';
 import App from './App';
+import socketio from 'socket.io';
 
 const port = normalizePort(process.env.PORT || 7000);
 
-App.set('port',port);
+App.set('port', port);
 const server = http.createServer(App);
 
+const io = socketio(server);
+
+
 server.listen(port);
-server.on('error',onError);
-server.on('listening',onListening);
+server.on('error', onError);
+server.on('listening', onListening);
+io.on('connection', ()=>{
+  console.log('Made socket connection...')
+})
 
 function normalizePort (val:number|string):number|string|boolean {
-  const port = (typeof val==='string')?parseInt(val,10):val;
+  const port = (typeof val==='string')?parseInt(val, 10):val;
 
   if(isNaN(port))return val;
   else if (port>=0) return port;

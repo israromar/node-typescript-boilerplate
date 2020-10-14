@@ -1,4 +1,4 @@
-import express,{Application, Request, Response} from 'express';
+import express, {Application, Request, Response} from 'express';
 import {Connection, createConnection} from 'typeorm';
 import config from './config/ormconfig';
 import logger from 'morgan';
@@ -26,7 +26,7 @@ class App {
     this.connectToPostGres();
     this.express = express();
     this.middleware();
-    this.initializeCors();
+    // this.initializeCors();
     this.initializeControllers(controllers);
     this.initializeErrorMiddleware();
   }
@@ -37,6 +37,7 @@ class App {
     this.express.use(bodyParser.json());
     this.express.use(bodyParser.urlencoded({extended: false}));
     this.express.use(cookieParser());
+    this.express.use(cors());
   }
   
   private initializeErrorMiddleware ():void{
@@ -72,7 +73,7 @@ class App {
   }
 
   private initializeControllers (controllers: IController[]):void {
-    this.express.get(`${this.root}/test`,authenticationMiddleware,(req:Request,res:Response)=>res.status(200).json({message:'working...'}));
+    this.express.get(`${this.root}/test`, authenticationMiddleware, (req:Request, res:Response)=>res.status(200).json({message:'working...'}));
     controllers.forEach((controller) => {
       this.express.use(this.root, controller.router);
     });

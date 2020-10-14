@@ -14,19 +14,20 @@ class UserController implements IController {
     }
 
     private initializeRoutes ():void{
-      this.router.get(`${this.path}/:id`,this.getUserById)
+      this.router.get(`${this.path}/:id`, this.getUserById)
     }
 
-    private async getUserById (req:Request,res:Response,next:NextFunction) {
+    private async getUserById (req:Request, res:Response, next:NextFunction) {
       const {id} = req.params;
 
       try {
-        const user = await getRepository<UserEntity>(UserEntity).findOne(id,{relations:['profile']});
+        const user = await getRepository<UserEntity>(UserEntity).findOne(id, {relations:['profile']});
 
         if(user) {
           user.password = undefined;
-          user.profile.id = undefined;
-          res.status(200).json({success:true,user});
+          if(user.profile)
+            user.profile.id = undefined;
+          res.status(200).json({success:true, user});
         }
         else next(new UserNotFoundException());
       } catch (error) {

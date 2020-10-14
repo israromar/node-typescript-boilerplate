@@ -7,7 +7,7 @@ import IDataStoredInToken from '../interfaces/dataStoredInToken.interface';
 // import UserEntity from '../interfaces/user.interface';
 import InvalildTokenException from '../errors/InvalidTokenException';
 import AuthenticationTokenMissingException from '../errors/AuthenticationTokenMissingException';
-export default async (req:IRequestWithUser,res:Response,next:NextFunction):Promise<IRequestWithUser>=>{
+export default async (req:IRequestWithUser, res:Response, next:NextFunction):Promise<IRequestWithUser>=>{
   const token = req.headers['authorization']?.split(' ')[1];
 
   if(token) {
@@ -15,7 +15,7 @@ export default async (req:IRequestWithUser,res:Response,next:NextFunction):Promi
 
     if(secret)
       try {
-        const verififactionResponse = verify(token,secret) as IDataStoredInToken;
+        const verififactionResponse = verify(token, secret) as IDataStoredInToken;
         const id = verififactionResponse.id;
         const user = await getRepository<UserEntity>(UserEntity).findOne({id});
 

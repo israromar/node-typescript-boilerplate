@@ -20,6 +20,7 @@
     "space-before-blocks":"error",
     "space-before-function-paren": "warn",
     "space-unary-ops": "error",
-    "lines-between-class-members":"error"
+    "lines-between-class-members":"error",
+    "comma-spacing":"error"
   }
 }
