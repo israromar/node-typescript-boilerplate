@@ -12,7 +12,7 @@ class Profile {
     @Column()
     public skills!:string;
 
-    @OneToOne(()=>UserEntity,(user:UserEntity)=>user.profile)
+    @OneToOne(()=>UserEntity, (user:UserEntity)=>user.profile)
     public user!:UserEntity;
 }
 export default Profile;

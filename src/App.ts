@@ -73,7 +73,7 @@ class App {
   }
 
   private initializeControllers (controllers: IController[]):void {
-    this.express.get(`${this.root}/test`, authenticationMiddleware, (req:Request, res:Response)=>res.status(200).json({message:'working...'}));
+    this.express.get(`${this.root}`, authenticationMiddleware, (req:Request, res:Response)=>res.status(200).json({message:'working...'}));
     controllers.forEach((controller) => {
       this.express.use(this.root, controller.router);
     });

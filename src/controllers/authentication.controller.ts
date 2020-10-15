@@ -22,43 +22,47 @@ class AuthenticationController implements IController {
     }
 
     private initializeRoutes ():void{
-      this.router.post(`${this.path}/register`,this.register);
-      this.router.post(`${this.path}/login`,this.login);
+      this.router.post(`${this.path}/register`, this.register);
+      this.router.post(`${this.path}/login`, this.login);
       this.router.post(`${this.path}/logout`, this.loggingOut);
     }
 
-    private register = async (req:Request,res:Response,next:NextFunction)=>{
-      const userData:UserEntity = req.body;
-      const userAlreadyExists = await getRepository<UserEntity>(UserEntity).findOne({email:userData.email})
-      
-      if(userAlreadyExists) {
-        next(new EmailAlreadyExistsException(userData.email));
-      }else{
-        const newUser = getRepository<UserEntity>(UserEntity).create(userData);
-        const hashedPassword = await hash(userData.password,10);
-
-        newUser.password=hashedPassword;
-        const user:UserEntity = await getRepository<UserEntity>(UserEntity).save({...newUser,firstName:newUser.firstName.toLowerCase(),lastName:newUser.lastName.toLowerCase()});
-
-        user.password = undefined;
-        res.status(200).json({success:true,user});
+    private register = async (req:Request, res:Response, next:NextFunction)=>{
+      try {
+        const userData:UserEntity = {...req.body, account_created:new Date().getTime().toString()};
+        const userAlreadyExists = await getRepository<UserEntity>(UserEntity).findOne({email:userData.email})
+        
+        if(userAlreadyExists) {
+          next(new EmailAlreadyExistsException(userData.email)); 
+        }else{
+          const newUser = getRepository<UserEntity>(UserEntity).create(userData);
+          const hashedPassword = await hash(userData.password, 10);
+  
+          newUser.password=hashedPassword;
+          const user:UserEntity = await getRepository<UserEntity>(UserEntity).save({...newUser, firstName:newUser.firstName.toLowerCase(), lastName:newUser.lastName.toLowerCase()});
+  
+          user.password = undefined;
+          res.status(200).json({success:true, user, message:'You have registered to our application'});
+        }
+      } catch (error) {
+        res.status(500).json({success:false, message:error.message})        
       }
     }
 
-    private login = async (req:Request,res:Response,next:NextFunction)=>{
+    private login = async (req:Request, res:Response, next:NextFunction)=>{
       const userData:UserEntity = req.body;
       const user = await getRepository<UserEntity>(UserEntity).findOne({email:userData.email});
 
       if(user) {
         if(user.password) {
-          const isPasswordSame = await compare(userData.password,user.password)
+          const isPasswordSame = await compare(userData.password, user.password)
 
           if(isPasswordSame) {
             user.password = undefined;
             const tokenData:IJwt = this.createToken(user);
 
             // res.setHeader('Set-Cookie',[this.createCookie(tokenData)]);
-            res.status(200).json({success:true,user,token:tokenData.token});
+            res.status(200).json({success:true, user, token:tokenData.token});
           }else next(new InvalidCredentialsException())
         }
       }else next(new InvalidCredentialsException())
@@ -79,7 +83,7 @@ class AuthenticationController implements IController {
       if(secret)
         return {
           expiresIn,
-          token:sign(dataStoredInToken,secret,{expiresIn})
+          token:sign(dataStoredInToken, secret, {expiresIn})
         }
       else throw new Error('Secret not provided');
 
