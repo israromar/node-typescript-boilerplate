@@ -14,6 +14,7 @@ import AuthenticationController from './controllers/authentication.controller';
 import authenticationMiddleware from './middlewares/authentication.middleware';
 import UserController from './controllers/userController';
 import ProfileController from './controllers/profile.controller';
+import ChatController from './controllers/chat.controller';
 class App {
 
   // ref to Express instance
@@ -83,7 +84,8 @@ class App {
 const controllers = [
   new AuthenticationController(),
   new UserController(),
-  new ProfileController()
+  new ProfileController(),
+  new ChatController()
 ]
 
 export default new App(controllers).express;

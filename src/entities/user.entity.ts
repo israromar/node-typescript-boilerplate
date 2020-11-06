@@ -4,41 +4,43 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
-  ManyToOne,
+  OneToMany,
+  ManyToMany,
 } from 'typeorm';
+import Chat from './chat.entity';
+import ChatEntity from './chat.entity';
+import MessageEntity from './message.entity';
 import ProfileEntity from './profile.entity';
-import TaskEntity from './task.entity';
 @Entity()
 class User {
   @PrimaryGeneratedColumn()
-  public id?: number;
+  public id: number;
 
   @Column()
-  public email!: string;
+  public email: string;
 
   @Column()
-  public firstName!: string;
+  public firstName: string;
 
   @Column()
-  public lastName!: string;
+  public lastName: string;
 
   @Column()
   public password?: string;
 
   @Column()
-  public account_created!: string;
-
-  // @OneToOne(()=>AddressEntity,(address:AddressEntity)=>address.user,{cascade:true})
-  // @JoinColumn()
-  // public address!:AddressEntity
+  public account_created?: string;
 
   @OneToOne(() => ProfileEntity, (profile: ProfileEntity) => profile.user, {
     cascade: true,
   })
   @JoinColumn()
-  public profile!: ProfileEntity;
+  public profile: ProfileEntity;
 
-  @ManyToOne(() => TaskEntity, (task) => task.assignedTo)
-  public task: TaskEntity;
+  @ManyToMany(()=>ChatEntity, chat=>chat.users)
+  public chats:ChatEntity[]
+
+  @OneToMany(()=>MessageEntity, message=>message.from)
+  public message:MessageEntity
 }
 export default User;

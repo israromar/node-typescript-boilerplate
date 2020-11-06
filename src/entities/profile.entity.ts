@@ -7,12 +7,12 @@ class Profile {
     public id?:number;
 
     @Column()
-    public profession!:string;
+    public profession:string;
 
     @Column()
-    public skills!:string;
+    public skills:string;
 
     @OneToOne(()=>UserEntity, (user:UserEntity)=>user.profile)
-    public user!:UserEntity;
+    public user:UserEntity;
 }
 export default Profile;
