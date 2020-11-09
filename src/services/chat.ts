@@ -7,6 +7,9 @@ import UserService from './user';
 
 class ChatService {
   public static async createChat (userAId:number | undefined, userBId:number):Promise<ChatEntity> {
+
+    if(userAId===userBId) throw new Error('You can initiate a chat with yourself')
+
     const userA:User = await UserService.getUserById(userAId);
     const userB:User = await UserService.getUserById(userBId);
 
@@ -18,16 +21,17 @@ class ChatService {
      * chat with the User or the other user has also done
      * the same
      */
-
-    const chats:ChatEntity[] = await getRepository<ChatEntity>(ChatEntity).find({relations:['users']});
-    let alreadyHasInitiatedChat = 0;
+    const chats:ChatEntity[] = (await getRepository<User>(User).findOneOrFail(userAId, {relations:['chats', 'chats.users']})).chats;
+    let alreadyHasInitiatedChat = false;
 
     chats.forEach(chat=>{
-      chat.users.forEach(user=>{
-        if(user.id === userA.id || user.id===userB.id) alreadyHasInitiatedChat++;
-      })
+      if(chat.users.some(user=>user.id===userBId)) alreadyHasInitiatedChat = true;
     })
-    if(alreadyHasInitiatedChat===2) throw new Error(`You have already initiated chat with user ${userB.firstName} ${userB.lastName}`)
+    if(alreadyHasInitiatedChat) throw new Error(`You have already initiated chat with user ${userB.firstName} ${userB.lastName}`)
+
+    /**
+     * Creating a new Chat Entity
+     */
     const users:User[] = [userA, userB];
     const chat = new ChatEntity();
 

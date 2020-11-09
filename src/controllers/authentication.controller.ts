@@ -21,7 +21,7 @@ class AuthenticationController implements IController {
       this.initializeRoutes();
     }
 
-    private initializeRoutes ():void{
+    private initializeRoutes ():void {
       this.router.post(`${this.path}/register`, this.register);
       this.router.post(`${this.path}/login`, this.login);
       this.router.post(`${this.path}/logout`, this.loggingOut);

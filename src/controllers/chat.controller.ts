@@ -17,7 +17,7 @@ class ChatController implements IController {
       this.initializeRoutes();
     }
 
-    private initializeRoutes ():void{
+    private initializeRoutes ():void {
       this.router.get(`${this.path}`, authenticationMiddleware, this.getUserChats)
       this.router.post(`${this.path}`, authenticationMiddleware, this.startChat)
     }
@@ -32,10 +32,10 @@ class ChatController implements IController {
 
         chats.forEach((chat:Chat)=>messagePromises.push(ChatService.getChatMessages(chat.id)));
 
-        Promise.all(messagePromises).then((messagePromise)=>{
-          messagePromise.forEach((message, index)=>chats[index].messages = message)
-          return res.status(200).json({success:true, message:'Chat retrieved successfully', chats})
-        })
+        const messagePromise = await Promise.all(messagePromises);
+
+        messagePromise.forEach((message, index)=>chats[index].messages = message)
+        return res.status(200).json({success:true, message:'Chat retrieved successfully', chats})
         
       } catch (error) {
         return res.status(500).json({success:false, message:error.message})
