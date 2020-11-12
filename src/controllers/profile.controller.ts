@@ -17,7 +17,7 @@ class ProfileController implements IController {
       this.initializeRoutes();
     }
 
-    private initializeRoutes ():void{
+    private initializeRoutes ():void {
       this.router.post(`${this.path}/create`, authenticationMiddleware, this.createUserProfile);
       this.router.get(`${this.path}/:name`, this.getUserProfileByName);
       this.router.patch(`${this.path}/`, authenticationMiddleware, this.updateUserProfile);

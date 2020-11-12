@@ -19,6 +19,6 @@ class Message {
   public date?: string;
 
   @ManyToOne(()=>Chat, chat=>chat.messages)
-  public chat:Chat
+  public chat?:Chat
 }
 export default Message;

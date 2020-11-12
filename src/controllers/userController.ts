@@ -13,8 +13,9 @@ class UserController implements IController {
       this.initializeRoutes();
     }
 
-    private initializeRoutes ():void{
-      this.router.get(`${this.path}/:id`, this.getUserById)
+    private initializeRoutes ():void {
+      this.router.get(`${this.path}/:id`, this.getUserById);
+      this.router.get(`${this.path}/name/:name`, this.getUserByName);
     }
 
     private async getUserById (req:Request, res:Response, next:NextFunction) {
@@ -27,6 +28,23 @@ class UserController implements IController {
           user.password = undefined;
           if(user.profile)
             user.profile.id = undefined;
+          res.status(200).json({success:true, user});
+        }
+        else next(new UserNotFoundException());
+      } catch (error) {
+        next(new UserNotFoundException())
+      }
+    }
+
+    private async getUserByName (req:Request, res:Response, next:NextFunction) {
+      const {name} = req.params;
+      const fullName:string[] = name.split('-');
+
+      try {
+        const user = await getRepository<UserEntity>(UserEntity).findOne({firstName:fullName[0], lastName:fullName[1]});
+
+        if(user) {
+          user.password = undefined;
           res.status(200).json({success:true, user});
         }
         else next(new UserNotFoundException());

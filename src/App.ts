@@ -15,6 +15,7 @@ import authenticationMiddleware from './middlewares/authentication.middleware';
 import UserController from './controllers/userController';
 import ProfileController from './controllers/profile.controller';
 import ChatController from './controllers/chat.controller';
+import MessageController from './controllers/message.controller';
 class App {
 
   // ref to Express instance
@@ -41,7 +42,7 @@ class App {
     this.express.use(cors());
   }
   
-  private initializeErrorMiddleware ():void{
+  private initializeErrorMiddleware ():void {
     this.express.use(errorMiddleware);
   }
 
@@ -85,7 +86,8 @@ const controllers = [
   new AuthenticationController(),
   new UserController(),
   new ProfileController(),
-  new ChatController()
+  new ChatController(),
+  new MessageController()
 ]
 
 export default new App(controllers).express;

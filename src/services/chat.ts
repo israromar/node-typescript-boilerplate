@@ -48,9 +48,15 @@ class ChatService {
   }
 
   public static async getChatMessages (id:number | undefined):Promise<Message[]> {
-    const chat:ChatEntity = await getRepository<ChatEntity>(ChatEntity).findOneOrFail(id, {relations:['messages']});
+    const chat:ChatEntity = await getRepository<ChatEntity>(ChatEntity).findOneOrFail(id, {relations:['messages', 'messages.from']});
 
     return chat.messages;
+  }
+
+  public static async getUserChatWith ():Promise<ChatEntity[]> {
+    const chat:ChatEntity[] = await getRepository<ChatEntity>(ChatEntity).find({relations:['users', 'messages', 'messages.from']});
+
+    return chat;
   }
 
 }

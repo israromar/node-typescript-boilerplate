@@ -6,7 +6,7 @@ const users:UserSocket[] =[];
 export default (io:socketIo.Server):void=>{
   io.on('connection', (socket)=>{
     console.log('Connection established');
-
+    
     socket.on('join', (user:User)=>{
       users.push({socketId:socket.id, ...user})
       io.emit('joined', users)
@@ -18,12 +18,8 @@ export default (io:socketIo.Server):void=>{
     });
 
     socket.on('disconnect', () => {
-      const index = users.findIndex(user=>user.socketId===socket.id)
-
-      console.log(users[index])
-      users.splice(index, 1)
       console.log('Client disconnected');
-      io.emit('joined', users)
+      io.emit('joined', users.filter(user=>user.socketId!==socket.id))
     });
   });
   
