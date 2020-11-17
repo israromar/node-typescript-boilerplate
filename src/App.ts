@@ -10,6 +10,7 @@ import IController from './interfaces/controller.interface';
 // Controllers
 import HeroController from './controllers/hero.controller';
 import AuthenticationController from './controllers/authentication.controller';
+import UserController from './controllers/user.controller';
 class App {
 
   // ref to Express instance
@@ -34,11 +35,11 @@ class App {
     this.express.use(cookieParser());
   }
   
-  private initializeErrorMiddleware ():void{
+  private initializeErrorMiddleware ():void {
     this.express.use(errorMiddleware);
   }
 
-  private connectToMongDb ():void{
+  private connectToMongDb ():void {
     const {
       MONGO_URL,
     } = process.env;
@@ -61,7 +62,8 @@ class App {
 
 const controllers = [
   new HeroController(),
-  new AuthenticationController()
+  new AuthenticationController(),
+  new UserController()
 ]
 
 export default new App(controllers).express;

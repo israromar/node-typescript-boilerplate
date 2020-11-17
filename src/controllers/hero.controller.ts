@@ -21,11 +21,11 @@ class HeroController implements IController {
       this.router.get(`${this.path}/:id`, this.get);
     }
 
-    getAll (req:IRequestWithUser,res:Response):void{
+    getAll (req:IRequestWithUser,res:Response):void {
       res.status(200).json(HeroData)
     }
 
-    get (req:Request,res:Response,next:NextFunction):void{
+    get (req:Request,res:Response,next:NextFunction):void {
       const {id} = req.params;
 
       const Hero:IHero = HeroData.filter(hero=>hero.id.toString()===id)[0]

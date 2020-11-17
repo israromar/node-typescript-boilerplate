@@ -22,7 +22,7 @@ class AuthenticationController implements IController {
       this.initializeRoutes();
     }
 
-    private initializeRoutes ():void{
+    private initializeRoutes ():void {
       this.router.post(`${this.path}/register`,this.register);
       this.router.post(`${this.path}/login`,this.login);
       this.router.post(`${this.path}/logout`, this.loggingOut);
@@ -41,7 +41,7 @@ class AuthenticationController implements IController {
         });
 
         user.password = undefined;
-        res.status(200).json(user)
+        res.status(200).json({success:true,message:'Registeration successfull'})
       }
     }
 
@@ -59,8 +59,8 @@ class AuthenticationController implements IController {
             user.password = undefined;
             const tokenData:IJwt = this.createToken(user);
 
-            res.setHeader('Set-Cookie',[this.createCookie(tokenData)]);
-            res.status(200).json(user);
+            // res.setHeader('Set-Cookie',[this.createCookie(tokenData)]);
+            res.status(200).json({success:true,token:tokenData,user});
           }else next(new InvalidCredentialsException())
         }
       }else next(new InvalidCredentialsException())
@@ -87,8 +87,8 @@ class AuthenticationController implements IController {
 
     }
 
-    private createCookie (tokenData: IJwt):string {
-      return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`;
-    }
+  // private createCookie (tokenData: IJwt):string {
+  //   return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`;
+  // }
 }
 export default AuthenticationController;
